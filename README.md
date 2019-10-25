@@ -1,6 +1,6 @@
 # UNSW MTRN2500 2019 S3 Assignment 2
 
-Assignment specification is available on teams.
+Assignment specification is available in assignment2_spec.md
 
 Setup instruction:
 
