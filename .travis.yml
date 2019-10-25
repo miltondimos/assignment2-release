@@ -19,7 +19,7 @@ jobs:
         - docker exec dashing /bin/bash -c 'apt update && apt install clang-format --yes'
         #- docker exec dashing /bin/bash -c 'apt update && apt install clang-tidy --yes'
         - docker exec dashing /bin/bash -c 'cd /root/src;git clone https://github.com/UNSW-MTRN2500/ament_lint.git'
-        - docker exec dashing /bin/bash -c 'touch /root/src/build/AMENT_IGNORE'
+        - docker exec dashing /bin/bash -c 'cd /root/src;mkdir build;touch build/AMENT_IGNORE'
         - docker exec dashing /bin/bash -c 'ls /root/src'
 
   # Build
