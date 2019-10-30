@@ -17,7 +17,7 @@ After the repository was created, you must do the following:
 
 **Note: failing to do the above will result you getting 0 marks for the assignment.**
 
-`mtrn2500_ws` in the provided MTRN2500 virtual machine is the recommanded location for you to clone the git repository.
+`mtrn2500_ws` in the provided MTRN2500 virtual machine is the recommended location for you to clone the git repository.
 
 Demonstration will be during your tutorial in week 9 (note this is one week later than advised in the course outline). Students in the Monday tutorial will demonstrate in week 10 due to the public holiday. 
 
@@ -25,7 +25,7 @@ Code style submission is due at 5pm Friday week 9 (15 November 2019).
 
 For the style task, create a pull request of your commit from the `master` branch to `review` branch. Your demonstrator will do a code review on your pull request. Your demonstrator can give early feedback if you create the pull request and ask your demonstrator to review it in your lab session. 
 
-Final assessment of the style task will be be based on the last commit to the Master branch before the code style submission due date.
+Final assessment of the style task will be be based on the pull request to `review` from the last commit to the `master` branch before the code style submission due date.
 
 
 ## Useful Information
@@ -112,7 +112,7 @@ An introduction to ROS and the purpose behind it can be found in the Week 5 Tuto
 ROS organises all user-written software in a specific way. All libraries and executables are organised into separate packages which each represent a specific area of functionality. For example: given a bipedal humanoid robot, one would organise a package that deals purely with moving the limbs of the robot. Another would deal purely with camera input. Another would deal with high-level movement planning logic, etc. 
 
 ### Nodes
-Given that packages are libraries and executables that are represent specific areas of funtionality, nodes can be understood as specific tasks that are undergone to perform some processing, communication or visualisation. The nodes are the final executables which are orchestrated by ROS so that they can communicate between each other. There can be multiple ROS nodes in a single ROS package.
+Given that packages are libraries and executables that are represent specific areas of functionality, nodes can be understood as specific tasks that are undergone to perform some processing, communication or visualisation. The nodes are the final executables which are orchestrated by ROS so that they can communicate between each other. There can be multiple ROS nodes in a single ROS package.
 
 To create a node, you must first create a class which you wish to use to conceptually represent the node. Consider the example where you wish to write a node called `ColourImageProcessing_node` through the `ColorImageProcessing` class which performs colour image processing in a camera processing package. You can specify that you wish to have that class be a node in the following way:
 
@@ -123,14 +123,14 @@ class ColorImageProcessing : public rclcpp::Node {
 ```
 
 ### Topics
-Topics are the main method of communicating between ROS packages. You can think of topics as channels of communication between nodes. ROS nodes can not only be run on a single machine (as you will be facilitating in this assignment), but they can also be run on multiple machines in a distributed fashion. ROS handles the networking and communication portion of this through these topics. They work using a Publisher / Subcriber model. This means that any node which subscribes to a particular topic will receive a message sent by a node which publishes to the same topic.
+Topics are the main method of communicating between ROS packages. You can think of topics as channels of communication between nodes. ROS nodes can not only be run on a single machine (as you will be facilitating in this assignment), but they can also be run on multiple machines in a distributed fashion. ROS handles the networking and communication portion of this through these topics. They work using a Publisher / Subscriber model. This means that any node which subscribes to a particular topic will receive a message sent by a node which publishes to the same topic.
 
 **FUN FACT:** Nodes can both publish and subscribe to multiple topics all at the same time.
 
 ### Subscribers
 In order for a node to receive information from another node, they must first subscribe to a topic. There are three pieces of information required to allow a node to subscribe to a topic. These are:
 * topic name (string naming the topic being subscribed to)
-* queue length (unsigned integer representing the amount of messages that can be stored in the message cue before the node refuses to accept any further mekssages through this subscription) 
+* queue length (unsigned integer representing the amount of messages that can be stored in the message cue before the node refuses to accept any further messages through this subscription) 
 * callback (a function pointer for a function that is run when a new message is received on the subscribed topic)
 
 Here is an example of how to create one:
@@ -189,7 +189,7 @@ class Example : public rclcpp::Node {
   Example() : rclcpp::Node{std::string{"Example_node"}} {
     auto timer_ = create_wall_timer(std::chrono::milliseconds{100},
                     [this]() {
-                        // function which implements the regularly occuring task
+                        // function which implements the regularly occurring task
                       }
                     );
   }
@@ -217,7 +217,7 @@ This task is handled by the class `joystick_listener` in the header `joystick_li
  The purpose of this task is to decode the `sensor_msgs::msg::Joy` message from the topic `zxxxxxxx/joy` to get the player actions. Send the player actions as a `geometry_msgs::msg::AccelStamped` message to the topic `/z0000000/acceleration`. i.e. the `joystick_listener` class will convert joystick inputs into acceleration values and publish these to be used by any subsequent nodes.
 
 `joystick_listener` class contains:
-* `joystick_input_` is a `std::shared_ptr` to a subcriber used to listen to `/z0000000/joy`.
+* `joystick_input_` is a `std::shared_ptr` to a subscriber used to listen to `/z0000000/joy`.
 * `acceleration_output_` is a `std::shared_ptr` to a publisher used to send the acceleration data to `/z0000000/acceleration`.
 * `zid_` is a string that contains `z0000000`.
 * `config_` is a `joystick_config` struct hold your joystick configuration data.
@@ -240,7 +240,7 @@ public:
 	* `string frame_id`: `std::string` containing the transform frame with which this data is associated.
 	* `builtin_interfaces/Time stamp`:  Two-integer timestamp that is expressed as seconds and nanoseconds.
 * `float32[] axes`:  `std::vector<float>` containing the axes measurements from a joystick.
-* `int32[] buttons` `std::vecot<int32_t>` containing the buttons measurements from a joystick.
+* `int32[] buttons` `std::vector<int32_t>` containing the buttons measurements from a joystick.
 
 All the other ROS2 message has similar structure. Documentation can be found at [ROS2 common interface](https://github.com/ros2/common_interfaces)
 
@@ -248,7 +248,7 @@ All the other ROS2 message has similar structure. Documentation can be found at 
 ### Subtask A  : Print all axis and buttons status to `std::cout` (2 marks)
 
 In the method `joy_message_callback`:
-1.  use `std::for_each` to iterate through the `axes` vector and print out the value of each axes in a single line. Seperate each value with a tab. Format: `0.0\t1.234567\t1.0\t2.0\t...\t\n`.
+1.  use `std::for_each` to iterate through the `axes` vector and print out the value of each axes in a single line. Separate each value with a tab. Format: `0.0\t1.234567\t1.0\t2.0\t...\t\n`.
 2. Use `std::count` or `std::count_if` to find out how many buttons have been pressed simultaneously. Print the value to `std::cout` in the format: `Total number of buttons pressed is {}.\n`, replace `{}` with total number of buttons pressed.
 
 ### Sub-task B: Calculate linear and angular acceleration inputs (4 marks)
