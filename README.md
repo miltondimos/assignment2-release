@@ -22,8 +22,15 @@ The assignment specification is available in `assignment2_spec.md`
     `ctrl + alt + t` or `ctrl + shift + T`  
 2. Complile:  
     `. mtrn2500_make`  
-3. Run the visualisation node  
-    `ros2 launch assignment2 rviz2.py`  
+~3. Run the visualisation node~  
+~`ros2 launch assignment2 rviz2.py`~ 
+ Previous launch script was not working. 
+3. Start rviz2:
+    `ros2 run rviz2 rviz2`
+4. Config rviz2 by clicking on `file` in rviz2 and select open config. There are two new config file in the launch folder.
+    * `rviz_task0_config.rviz` set the global frame to `z0000000/local_frame`, this will show a rectangle marker at the origin. This works does not require working transform broadcast.
+    * `rviz_task0_config.rviz` set the global frame to `world_frame`, the provided `TranformBroadcaster` provided node will calculate send the required `world_frame` to `z0000000/local_frame` transform based on `z0000000/pose` message. Working task 2 is required for this.
+`
 
 #### Then compile and run assignment2:  
 4. Start another terminal tab  
