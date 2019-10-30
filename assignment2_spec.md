@@ -205,6 +205,7 @@ To launch the joystick driver, in the directory you cloned the git repository:
 1. Install the launch script using the command: `colcon build`
 2. Source the assignment package using the command: `source install/setup.bash`
 3. Launch joy_node using the command: `ros2 launch assignment2 joy_node.py`
+4. A quick way to show message being sent to a topic is use the command `ros2 topic echo /z0000000/joy`. You can check the list of current topic by using the command `ros2 topic list`.
 
 You can change the topic the `joy` message is redirected to by editing `joy_node.py` and 
 `joy_node_config.yaml` file in the `launch` folder.
@@ -220,7 +221,7 @@ This task is handled by the class `joystick_listener` in the header `joystick_li
 * `acceleration_output_` is a `std::shared_ptr` to a publisher used to send the acceleration data to `/z0000000/acceleration`.
 * `zid_` is a string that contains `z0000000`.
 * `config_` is a `joystick_config` struct hold your joystick configuration data.
- * `joy_message_callback` is a method that will be called every time a new message is received by `joystick_input_`, the new message will be passed in as `joy_message` parameter. You need to make sure to register this function when you create `joystick_input_`.
+* `joy_message_callback` is a method that will be called every time a new message is received by `joystick_input_`, the new message will be passed in as `joy_message` parameter. You need to make sure to register this function when you create `joystick_input_`.
  
 `joystick_config` struct is defined in `config_parser.hpp` as:
 ```c++
@@ -273,6 +274,7 @@ The `geometry_msgs::msg::AccelStamped` message should contain:
 * Use `zid` as the `header.frame_id`.
 
 You can check the message by echoing it to the terminal by using the command:
+
 7. `ros2 topic list` 
 8. `ros2 topic echo /z0000000/joy`
 
