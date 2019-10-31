@@ -96,7 +96,7 @@ Here we have the main portion of this example - defining the lambda function. We
 * `(const double& value)`: the input arguments to this function, where the chosen algorithm (which is `std::for_each` in this case) passes each value between the start and end iterators
 * `{ ... }`: the contents of the function
 
-The parameters which are captured (the first section `[ ... ]`) declare which variables that exist in the scope that this lambda function is defined in which are to be passed to the lambda function. If the `&` was omitted, the parameter would be copied and the copy is passed to the lambda function. With the `&`, a reference to the original parameter is created and the reference is passed in to the lambda function.
+The parameters which are captured (the first section `[ ... ]`) declare which variables that exist in the scope that this lambda function is defined in which are to be passed to the lambda function. If the `&` was omitted, the parameter would be copied and the copy is passed to the lambda function. With the `&`, a reference to the original parameter is created and the reference is passed in to the lambda function. The lambda function can also store the `this` pointer by value using the syntex `[this]`
 
 ```cpp
   std::cout << "Largest value is: " << maxValue << std::endl;
@@ -213,29 +213,30 @@ You can change the topic the `joy` message is redirected to by editing `joy_node
 
 
 ## Task 1: Read the joystick (6 marks) 
-This task is handled by the class `joystick_listener` in the header `joystick_listener.hpp`.
+This task is handled by the class `JoystickListener` in the header `joystick_listener.hpp`.
 
- The purpose of this task is to decode the `sensor_msgs::msg::Joy` message from the topic `zxxxxxxx/joy` to get the player actions. Send the player actions as a `geometry_msgs::msg::AccelStamped` message to the topic `/z0000000/acceleration`. i.e. the `joystick_listener` class will convert joystick inputs into acceleration values and publish these to be used by any subsequent nodes.
+ The purpose of this task is to decode the `sensor_msgs::msg::Joy` message from the topic `zxxxxxxx/joy` to get the player actions. Send the player actions as a `geometry_msgs::msg::AccelStamped` message to the topic `/z0000000/acceleration`. i.e. the `JoystickListener` class will convert joystick inputs into acceleration values and publish these to be used by any subsequent nodes.
 
-`joystick_listener` class contains:
+`JoystickListener` class contains:
 * `joystick_input_` is a `std::shared_ptr` to a subscriber used to listen to `/z0000000/joy`.
 * `acceleration_output_` is a `std::shared_ptr` to a publisher used to send the acceleration data to `/z0000000/acceleration`.
 * `zid_` is a string that contains `z0000000`.
 * `config_` is a `joystick_config` struct hold your joystick configuration data.
 * `joy_message_callback` is a method that will be called every time a new message is received by `joystick_input_`, the new message will be passed in as `joy_message` parameter. You need to make sure to register this function when you create `joystick_input_`.
  
-`joystick_config` struct is defined in `config_parser.hpp` as:
+`JoystickConfig` struct is defined in `config_parser.hpp` as:
 ```c++
-struct joystick_config
+struct JoystickConfig
 {
 public:
-	std::size_t speed_plus_axis_; 
-	std::size_t speed_minus_axis_; 
-	std::size_t steering_axis_;
-        double steering_deadzone;
-        double speed_deadzone;
+    std::size_t speed_plus_axis;
+    std::size_t speed_minus_axis;
+    std::size_t steering_axis;
+    double steering_deadzone;
+    double speed_deadzone;
 };
 ```
+
 [`sensor_msgs::msg::Joy`](https://github.com/ros2/common_interfaces/blob/master/sensor_msgs/msg/Joy.msg) contains 
 * `header`
 	* `string frame_id`: `std::string` containing the transform frame with which this data is associated.
@@ -254,9 +255,9 @@ In the method `joy_message_callback`:
 
 ### Sub-task B: Calculate linear and angular acceleration inputs (4 marks)
 The axes we will need to read from are defined in `config_` .
-* speed_plus_axis_: Positive linear acceleration axis value
-* speed_minus_axis_: Negative linear acceleration axis
-* steering_axis_: Angular acceleration axis
+* speed_plus_axis: Positive linear acceleration axis value
+* speed_minus_axis: Negative linear acceleration axis
+* steering_axis: Angular acceleration axis
 
 The axis could be a trigger or a joystick on the Xbox controller.
 
@@ -280,9 +281,11 @@ You can check the message by echoing it to the terminal by using the command:
 8. `ros2 topic echo /z0000000/joy`
 
 ## TASK 2: Velocity and Pose (4.5 marks)
-This task is handled by the class `velocity_kinematic` in the header `velocity_kinematic.hpp`. This class will subscribe to the topic `/z0000000/acceleration` from the previous task and integrate the acceleration to obtain velocity. Periodically send the calculated velocity as a `geometry_msgs::msg::TwistStamped` message to the topic `/z0000000/velocity`.
+Calculate the velocity and pose of the vehicle at regular interval using the acceleration input. Velocity is calculated with respect to the vehicle body and pose with respect to the global coordinate frame.
 
 ### Sub-task A: Calculate linear and angular velocity (1.5 marks)
+This task is handled by the class `VelocityKinematic` in the header `velocity_kinematic.hpp`. This class will subscribe to the topic `/z0000000/acceleration` from the previous task and integrate the acceleration to obtain velocity. Periodically send the calculated velocity as a `geometry_msgs::msg::TwistStamped` message to the topic `/z0000000/velocity`.
+
 1. Assume initial velocities are both zero.
 2. Calculate time difference `dt` between the last time `stamp` and the current time. You can get the current time by calling the function `now()`. Hint: The ROS time class has a method called `seconds()`;
 3. Integrate the velocity at the rate `refresh_period` milliseconds. `refresh_period` is a constructor parameter.
@@ -302,7 +305,7 @@ The `geometry_msgs::msg::TwistStamped` message should contain:
 * If the last velocity message received was older then 10 seconds, consider the communication lost and set the acceleration and velocity to zero. Print "Communication lost.\n" and stop sending `geometry_msgs::msg::TwistStamped` until a new `geometry_msgs::msg::AccelStamped` has been received.
 
 ### Sub-task C: Calculate position and orientation (pose) (1.5 marks)
-This task is handled by the class `pose_kinematic` in the header `pose_kinematic.hpp`. This class will subscribe to the topic `/z0000000/velocity` from the last part and integrate the velocity to get current pose. Periodically send the calculated pose as a `geometry_msgs::msg::PoseStamped` message to the topic `/z0000000/pose`.
+This task is handled by the class `PoseKinematic` in the header `pose_kinematic.hpp`. This class will subscribe to the topic `/z0000000/velocity` from the last part and integrate the velocity to get current pose. Periodically send the calculated pose as a `geometry_msgs::msg::PoseStamped` message to the topic `/z0000000/pose`.
 * Assume starting at the origin (0.0, 0.0) with heading = 0.
 * Calculate time difference between the last time `stamp` and the current time.
 * Convert the velocity to the global coordinate frame using trigonometric functions.
@@ -315,13 +318,13 @@ The `geometry_msgs::msg::PoseStamped` message should contain"
 * Use `zid` as the `header.frame_id`.
 
 ## Task 3: Parse config file (4.5 marks)
-This task is handled by the class `config_reader` and `config_parser` in the header `config_parser.hpp`. 
+This task is handled by the class `ConfigReader` and `ConfigParser` in the header `config_parser.hpp`. 
 
 Read and parse the config file as opposed to using hard-coded configuration parameters. `config_reader` will read in the config file into a `std::unordered_map<std::string,std::string>`, while `config_parse` will convert the result from `config_reader` to actual configurations.
 
 
 ### Sub-task A: Read the config file (1.5 marks)
-This task is handled by the class `config_reader` in the header `config_parser.hpp`.
+This task is handled by the class `ConfigReader` in the header `config_parser.hpp`.
 
 1. Location of the config file will be passed in as a commandline argument. 
 2. Modify the main program to read from a config file instead of `std::cin`.
@@ -329,7 +332,7 @@ This task is handled by the class `config_reader` in the header `config_parser.h
 4. Finish reading the file when an empty line was encounter.
 
 ### Sub-task B: Read the config file (1.5 marks)
-This task is handled by the class `config_reader` in the header `config_parser.hpp`.
+This task is handled by the class `ConfigReader` in the header `config_parser.hpp`.
 
 The config file will be in the format `key : value`.
 All the keys will be unique. Key and value may be surrounded by arbitrary amount of spaces. Each line consist of only a single pair of `key` and `value`.
@@ -340,7 +343,7 @@ All the keys will be unique. Key and value may be surrounded by arbitrary amount
 4. After all the lines have been read, iterate through config_ and print `key` and `value` pairs. Format `key: \"{key}\", value: \"{value}\"\n`. `{}` indicates the position of the value and should be not printed.
 
 ### Sub-task C: Parse the config file (1.5 marks)
-This task is handled by the class `config_parser` in the header `config_parser.hpp`.
+This task is handled by the class `ConfigParser` in the header `config_parser.hpp`.
 
 1. config_parser constructor should read from `config` and initialise all the members.
 ```
@@ -358,8 +361,8 @@ The most important thing with style is to make your code understandable to other
 
 * Follow the course style guide which is based on ROS2 development guide.
 * Neat and tidy code, style is consistent throughout. 
-* Good choice of names that is meaningful. 
-* Good use of function to split code into manageable segments and avoid code duplication.
+* Good choice of names that are meaningful. 
+* Good use of functions to split code into manageable segments and avoid code duplication.
 * Good use of c++ features.
 * Good documentation and comments. 
 * No error or warning message when compiling. 
