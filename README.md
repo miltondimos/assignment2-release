@@ -8,8 +8,8 @@ The assignment specification is available in `assignment2_spec.md`
 1. Open a terminal and navigate to the ROS workspace:  
     a. `ctrl + alt + t`
     b. `cd ~/mtrn2500_ws`      
-2. Remove the `old_src` directory (folder):  
-     `rm -r old_src`  
+2. Remove the `old-src` directory (folder):  
+     `rm -r old-src`  
 3. Set up public key with VM and github account:  
     a. https://help.github.com/en/github/authenticating-to-github/generating-a-new-ssh-key-and-adding-it-to-the-ssh-agent  
     b. https://help.github.com/en/github/authenticating-to-github/adding-a-new-ssh-key-to-your-github-account  
