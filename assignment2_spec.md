@@ -137,7 +137,7 @@ Here is an example of how to create one:
 ```cpp
 class Example : public rclcpp::Node {
   Example() : rclcpp::Node{std::string{"Example_node"}} {
-    auto exampleSubscriber_ = create_subscription<sensor_msgs::msg::Joy>(
+    auto example_subscriber_ = create_subscription<sensor_msgs::msg::Joy>(
                                 std::string("topic"),
                                 10,
                                 [this](sensor_msgs::msg::Joy::UniquePtr joy_message){
@@ -153,10 +153,11 @@ Or, if you would prefer to implement your callback in a separate function withou
 ```cpp
 class Example : public rclcpp::Node {
   Example() : rclcpp::Node{std::string{"Example_node"}} {
-    auto exampleSubscriber_ = create_subscription<sensor_msgs::msg::Joy>(std::string("topic"), 10, &Example::topicCallback);
+    auto callback = std::bind(&JoystickListener::joy_message_callback, this, std::placeholders::_1);
+    auto example_subscriber_ = create_subscription<sensor_msgs::msg::Joy>(std::string("topic"), 10, callback);
   }
 
-  void topicCallback(sensor_msgs::msg::Joy::UniquePtr joy_message) {
+  void topic_callback(sensor_msgs::msg::Joy::UniquePtr joy_message) {
     // callback implementation
   }
 }
@@ -168,15 +169,15 @@ In order for information to be communicated to other components of the system, i
 ```cpp
 class Example : public rclcpp::Node {
   Example() : rclcpp::Node{std::string{"node_name"}} {
-    auto stringPublisher_ = create_publisher<geometry_msgs::msg::String>(std::string{"ExampleTopic"}, 10)
+    auto string_publisher_ = create_publisher<geometry_msgs::msg::String>(std::string{"ExampleTopic"}, 10)
   }
 };
 
 // within some other function / method
-auto stringInformation = sensor_msgs::msg::String();
+auto string_information = sensor_msgs::msg::String();
 // the fields of a particular structure can be found in the "msgs" directory of a "msgs" package if it is a custom message
-stringInformation.message = std::string("This is some example text that will be sent through a topic");
-stringPublisher_->publish(stringInformation);
+string_information.message = std::string("This is some example text that will be sent through a topic");
+string_publisher_->publish(stringInformation);
 ```
 
 ### Timers
