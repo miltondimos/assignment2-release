@@ -162,6 +162,7 @@ class Example : public rclcpp::Node {
   }
 }
 ```
+Note that when we attach the callback function we need to pass in the `this` argument, however we cannot do that explicitly and therefore we must bind a partial function to the callback with `std::bind` to pass in the hidden `this` argument.  
 
 ### Publishers
 In order for information to be communicated to other components of the system, it must first be packaged and sent. This is the role of a publisher. In order to publish a message, you must first create a data structure which defines this message, populate it with the required information and then publish it. An example can be found below.
@@ -203,10 +204,9 @@ class Example : public rclcpp::Node {
 `joy_node` in the package `joy` is an executable that will interface with an Xbox controller and send inputs as `sensor_msgs::msg::Joy` message to the topic `/joy`. A launch file is provided to redirect the message to `/z0000000/joy`, the launch file will also configure `joy_node` to read from the correct device.
 
 To launch the joystick driver, in the directory you cloned the git repository:
-1. Install the launch script using the command: `colcon build`
-2. Source the assignment package using the command: `source install/setup.bash`
-3. Launch joy_node using the command: `ros2 launch assignment2 joy_node.py`
-4. A quick way to show message being sent to a topic is use the command `ros2 topic echo /z0000000/joy`. You can check the list of current topic by using the command `ros2 topic list`.
+1. Install the launch script using the command: `. mtrn2500_make`
+2. Launch joy_node using the command: `ros2 launch assignment2 joy_node.py`
+3. A quick way to show message being sent to a topic is use the command `ros2 topic echo /z0000000/joy`. You can check the list of current topic by using the command `ros2 topic list`.
 
 You can change the topic the `joy` message is redirected to by editing `joy_node.py` and 
 `joy_node_config.yaml` file in the `launch` folder.
