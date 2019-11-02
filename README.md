@@ -103,7 +103,7 @@ A: See this link: https://askubuntu.com/questions/537799/save-in-gedit-without-i
 
  
 ### Q: Suggested Task 1 Starting point
-Study the ros2 tutorial section of assignment 2 spec. Start task 1 by subscribing to `z0000000/joy` topic, how the callback that handles the joystick message work by printing some debug text in the callback function.
+Study the ros2 tutorial section of assignment 2 spec. Start task 1 by subscribing to `z0000000/joy` topic, check that the callback that handles the joystick message works by printing some debug text in the callback function.
 
 ### Q: List of recommanded plugin for vscode:
 
