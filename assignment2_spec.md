@@ -265,7 +265,7 @@ In the method `joy_message_callback`:
 1. Calculate positive linear acceleration. Axis input in the range of [-1.0, 1.0] corresponds to an acceleration output in the range of [0.0, 1.0].
 2. Calculate negative linear acceleration. Axis input in the range of [-1.0, 1.0] corresponds to an acceleration output in the range of [0.0, -1.0].
 3.  Calculate the angular acceleration. Axis input in the range of [-1.0, 1.0] corresponds to an acceleration output in the range of [-1.0, 1.0].
-4. Calculate the net linear acceleration equal to the sum of positive and negative linear acceleration in the range of [-1.0, 1.0].
+4. Calculate the net linear acceleration equal to the sum of positive and negative linear acceleration scaled to the range of [-1.0, 1.0].
 5. Due to the physical design the joystick value may be a small non-zero value at the neutral position. This is known as deadzone. We want to treat those inputs as zero. Treat input within plus or minus deadzone value as zero. Scale the input such that input [deadzone , 1.0] scales to [0.0 , 1.0] and [-deadzone , -1.0] to [0.0, and -1.0], The deadzone value is specified in `config_.speed_deadzone` and `config_.steering_deadzone`. 
 6. Send a `geometry_msgs::msg::AccelStamped` using `publish` method of the publisher pointed by`acceleration_output_`.
 
