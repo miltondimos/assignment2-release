@@ -300,6 +300,7 @@ The `geometry_msgs::msg::TwistStamped` message should contain:
 * Use `zid` as the `header.frame_id`.
 
 ### Sub-task B: Error handling (1.5 marks)
+* Scale the linear and angular acceleration based on `max_linear_acceleration` and `max_angular_acceleration` set in the `kinematic_limits config_`.
 * Limit maximum velocity to based on the plus/minus maximum velocity set in the `kinematic_limits config_`.
 * Do nothing until the first `geometry_msgs::msg::AccelStamped` has been received.
 * If the last velocity message received was older then 10 seconds, consider the communication lost and set the acceleration and velocity to zero. Print "Communication lost.\n" and stop sending `geometry_msgs::msg::TwistStamped` until a new `geometry_msgs::msg::AccelStamped` has been received.
