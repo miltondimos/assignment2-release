@@ -170,7 +170,7 @@ In order for information to be communicated to other components of the system, i
 ```cpp
 class Example : public rclcpp::Node {
   Example() : rclcpp::Node{std::string{"node_name"}} {
-    auto string_publisher_ = create_publisher<geometry_msgs::msg::String>(std::string{"ExampleTopic"}, 10)
+    this.string_publisher_ = create_publisher<geometry_msgs::msg::String>(std::string{"ExampleTopic"}, 10)
   }
 };
 
