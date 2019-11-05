@@ -136,8 +136,10 @@ In order for a node to receive information from another node, they must first su
 Here is an example of how to create one:
 ```cpp
 class Example : public rclcpp::Node {
+  rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr example_subscriber_;
+  
   Example() : rclcpp::Node{std::string{"Example_node"}} {
-    auto example_subscriber_ = create_subscription<sensor_msgs::msg::Joy>(
+    this->example_subscriber_ = create_subscription<sensor_msgs::msg::Joy>(
                                 std::string("topic"),
                                 10,
                                 [this](sensor_msgs::msg::Joy::UniquePtr joy_message){
@@ -152,9 +154,11 @@ class Example : public rclcpp::Node {
 Or, if you would prefer to implement your callback in a separate function without using a lambda function:
 ```cpp
 class Example : public rclcpp::Node {
+  rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr example_subscriber_;
+
   Example() : rclcpp::Node{std::string{"Example_node"}} {
-    auto callback = std::bind(&JoystickListener::joy_message_callback, this, std::placeholders::_1);
-    auto example_subscriber_ = create_subscription<sensor_msgs::msg::Joy>(std::string("topic"), 10, callback);
+    auto callback = std::bind(&Example::topic_callback, this, std::placeholders::_1);
+    this->example_subscriber_ = create_subscription<sensor_msgs::msg::Joy>(std::string("topic"), 10, callback);
   }
 
   void topic_callback(sensor_msgs::msg::Joy::UniquePtr joy_message) {
@@ -162,15 +166,17 @@ class Example : public rclcpp::Node {
   }
 }
 ```
-Note that when we attach the callback function we need to pass in the `this` argument, however we cannot do that explicitly and therefore we must bind a partial function to the callback with `std::bind` to pass in the hidden `this` argument.  
+Note that when we attach the callback function we need to pass in the `this` argument, however we cannot do that explicitly and therefore we must bind a partial function to the callback with `std::bind` to pass in the hidden `this` argument. We add the placeholder variable `std::placeholders::_1` to the callback to allow the message pointer to be passed into our callback function.  
 
 ### Publishers
 In order for information to be communicated to other components of the system, it must first be packaged and sent. This is the role of a publisher. In order to publish a message, you must first create a data structure which defines this message, populate it with the required information and then publish it. An example can be found below.
 
 ```cpp
 class Example : public rclcpp::Node {
+  rclcpp::Publisher<geometry_msgs::msg::String> string_publisher_;
+
   Example() : rclcpp::Node{std::string{"node_name"}} {
-    auto string_publisher_ = create_publisher<geometry_msgs::msg::String>(std::string{"ExampleTopic"}, 10)
+    this->string_publisher_ = create_publisher<geometry_msgs::msg::String>(std::string{"ExampleTopic"}, 10)
   }
 };
 
@@ -188,8 +194,10 @@ Another method capable of automatically causing some events to be kicked off at 
 #include <chrono>
 
 class Example : public rclcpp::Node {
+  rclcpp::TimerBase::SharedPtr timer_;
+
   Example() : rclcpp::Node{std::string{"Example_node"}} {
-    auto timer_ = create_wall_timer(std::chrono::milliseconds{100},
+    this->timer_ = create_wall_timer(std::chrono::milliseconds{100},
                     [this]() {
                         // function which implements the regularly occurring task
                       }
@@ -255,17 +263,22 @@ In the method `joy_message_callback`:
 
 ### Sub-task B: Calculate linear and angular acceleration inputs (4 marks)
 The axes we will need to read from are defined in `config_` .
-* speed_plus_axis: Positive linear acceleration axis value
+* speed_plus_axis: Positive linear acceleration axis
 * speed_minus_axis: Negative linear acceleration axis
 * steering_axis: Angular acceleration axis
 
-The axis could be a trigger or a joystick on the Xbox controller.
+An axis could be a trigger or a joystick on the Xbox controller. For example, if we were using a wired Xbox 360 controller:
+* speed_plus_axis = 0: Read from the Left/Right left joystick
+* speed_minus_axis = 1: Read from the Up/Down left joystick
+* steering_axis = 2: Read from the left trigger
+
+The axes mappings for each controller can be found at [ROS Joy Documentation](http://wiki.ros.org/joy)  
 
 In the method `joy_message_callback`:
 1. Calculate positive linear acceleration. Axis input in the range of [-1.0, 1.0] corresponds to an acceleration output in the range of [0.0, 1.0].
 2. Calculate negative linear acceleration. Axis input in the range of [-1.0, 1.0] corresponds to an acceleration output in the range of [0.0, -1.0].
 3.  Calculate the angular acceleration. Axis input in the range of [-1.0, 1.0] corresponds to an acceleration output in the range of [-1.0, 1.0].
-4. Calculate the net linear acceleration equal to the sum of positive and negative linear acceleration in the range of [-1.0, 1.0].
+4. Calculate the net linear acceleration equal to the sum of positive and negative linear acceleration scaled to the range of [-1.0, 1.0].
 5. Due to the physical design the joystick value may be a small non-zero value at the neutral position. This is known as deadzone. We want to treat those inputs as zero. Treat input within plus or minus deadzone value as zero. Scale the input such that input [deadzone , 1.0] scales to [0.0 , 1.0] and [-deadzone , -1.0] to [0.0, and -1.0], The deadzone value is specified in `config_.speed_deadzone` and `config_.steering_deadzone`. 
 6. Send a `geometry_msgs::msg::AccelStamped` using `publish` method of the publisher pointed by`acceleration_output_`.
 
@@ -300,6 +313,7 @@ The `geometry_msgs::msg::TwistStamped` message should contain:
 * Use `zid` as the `header.frame_id`.
 
 ### Sub-task B: Error handling (1.5 marks)
+* Scale the linear and angular acceleration based on `max_linear_acceleration` and `max_angular_acceleration` set in the `kinematic_limits config_`.
 * Limit maximum velocity to based on the plus/minus maximum velocity set in the `kinematic_limits config_`.
 * Do nothing until the first `geometry_msgs::msg::AccelStamped` has been received.
 * If the last velocity message received was older then 10 seconds, consider the communication lost and set the acceleration and velocity to zero. Print "Communication lost.\n" and stop sending `geometry_msgs::msg::TwistStamped` until a new `geometry_msgs::msg::AccelStamped` has been received.
