@@ -154,7 +154,7 @@ Or, if you would prefer to implement your callback in a separate function withou
 class Example : public rclcpp::Node {
   Example() : rclcpp::Node{std::string{"Example_node"}} {
     auto callback = std::bind(&Example::topic_callback, this, std::placeholders::_1);
-    this.example_subscriber_ = create_subscription<sensor_msgs::msg::Joy>(std::string("topic"), 10, callback);
+    this->example_subscriber_ = create_subscription<sensor_msgs::msg::Joy>(std::string("topic"), 10, callback);
   }
 
   void topic_callback(sensor_msgs::msg::Joy::UniquePtr joy_message) {
@@ -170,7 +170,7 @@ In order for information to be communicated to other components of the system, i
 ```cpp
 class Example : public rclcpp::Node {
   Example() : rclcpp::Node{std::string{"node_name"}} {
-    this.string_publisher_ = create_publisher<geometry_msgs::msg::String>(std::string{"ExampleTopic"}, 10)
+    this->string_publisher_ = create_publisher<geometry_msgs::msg::String>(std::string{"ExampleTopic"}, 10)
   }
 };
 
@@ -189,7 +189,7 @@ Another method capable of automatically causing some events to be kicked off at 
 
 class Example : public rclcpp::Node {
   Example() : rclcpp::Node{std::string{"Example_node"}} {
-    auto timer_ = create_wall_timer(std::chrono::milliseconds{100},
+    this->timer_ = create_wall_timer(std::chrono::milliseconds{100},
                     [this]() {
                         // function which implements the regularly occurring task
                       }
