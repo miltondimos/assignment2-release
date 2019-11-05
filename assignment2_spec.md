@@ -136,8 +136,10 @@ In order for a node to receive information from another node, they must first su
 Here is an example of how to create one:
 ```cpp
 class Example : public rclcpp::Node {
+  rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr example_subscriber_;
+  
   Example() : rclcpp::Node{std::string{"Example_node"}} {
-    auto example_subscriber_ = create_subscription<sensor_msgs::msg::Joy>(
+    this->example_subscriber_ = create_subscription<sensor_msgs::msg::Joy>(
                                 std::string("topic"),
                                 10,
                                 [this](sensor_msgs::msg::Joy::UniquePtr joy_message){
@@ -152,6 +154,8 @@ class Example : public rclcpp::Node {
 Or, if you would prefer to implement your callback in a separate function without using a lambda function:
 ```cpp
 class Example : public rclcpp::Node {
+  rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr example_subscriber_;
+
   Example() : rclcpp::Node{std::string{"Example_node"}} {
     auto callback = std::bind(&Example::topic_callback, this, std::placeholders::_1);
     this->example_subscriber_ = create_subscription<sensor_msgs::msg::Joy>(std::string("topic"), 10, callback);
@@ -169,6 +173,8 @@ In order for information to be communicated to other components of the system, i
 
 ```cpp
 class Example : public rclcpp::Node {
+  rclcpp::Publisher<geometry_msgs::msg::String> string_publisher_;
+
   Example() : rclcpp::Node{std::string{"node_name"}} {
     this->string_publisher_ = create_publisher<geometry_msgs::msg::String>(std::string{"ExampleTopic"}, 10)
   }
@@ -188,6 +194,8 @@ Another method capable of automatically causing some events to be kicked off at 
 #include <chrono>
 
 class Example : public rclcpp::Node {
+  rclcpp::TimerBase::SharedPtr timer_;
+
   Example() : rclcpp::Node{std::string{"Example_node"}} {
     this->timer_ = create_wall_timer(std::chrono::milliseconds{100},
                     [this]() {
