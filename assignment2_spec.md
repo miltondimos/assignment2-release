@@ -316,7 +316,7 @@ The `geometry_msgs::msg::TwistStamped` message should contain:
 * Scale the linear and angular acceleration based on `max_linear_acceleration` and `max_angular_acceleration` set in the `kinematic_limits config_`.
 * Limit maximum velocity to based on the plus/minus maximum velocity set in the `kinematic_limits config_`.
 * Do nothing until the first `geometry_msgs::msg::AccelStamped` has been received.
-* If the last velocity message received was older then 10 seconds, consider the communication lost and set the acceleration and velocity to zero. Print "Communication lost.\n" and stop sending `geometry_msgs::msg::TwistStamped` until a new `geometry_msgs::msg::AccelStamped` has been received.
+* If the last `geometry_msgs::msg::AccelStamped` message received was older then 10 seconds, consider the communication lost and set the acceleration and velocity to zero. Print "Communication lost.\n" and stop sending `geometry_msgs::msg::TwistStamped` until a new `geometry_msgs::msg::AccelStamped` has been received.
 
 ### Sub-task C: Calculate position and orientation (pose) (1.5 marks)
 This task is handled by the class `PoseKinematic` in the header `pose_kinematic.hpp`. This class will subscribe to the topic `/z0000000/velocity` from the last part and integrate the velocity to get current pose. Periodically send the calculated pose as a `geometry_msgs::msg::PoseStamped` message to the topic `/z0000000/pose`.
