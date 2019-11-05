@@ -153,8 +153,8 @@ Or, if you would prefer to implement your callback in a separate function withou
 ```cpp
 class Example : public rclcpp::Node {
   Example() : rclcpp::Node{std::string{"Example_node"}} {
-    auto callback = std::bind(&JoystickListener::joy_message_callback, this, std::placeholders::_1);
-    auto example_subscriber_ = create_subscription<sensor_msgs::msg::Joy>(std::string("topic"), 10, callback);
+    auto callback = std::bind(&Example::topic_callback, this, std::placeholders::_1);
+    this.example_subscriber_ = create_subscription<sensor_msgs::msg::Joy>(std::string("topic"), 10, callback);
   }
 
   void topic_callback(sensor_msgs::msg::Joy::UniquePtr joy_message) {
@@ -162,7 +162,7 @@ class Example : public rclcpp::Node {
   }
 }
 ```
-Note that when we attach the callback function we need to pass in the `this` argument, however we cannot do that explicitly and therefore we must bind a partial function to the callback with `std::bind` to pass in the hidden `this` argument.  
+Note that when we attach the callback function we need to pass in the `this` argument, however we cannot do that explicitly and therefore we must bind a partial function to the callback with `std::bind` to pass in the hidden `this` argument. We add the placeholder variable `std::placeholders::_1` to the callback to allow the message pointer to be passed into our callback function.  
 
 ### Publishers
 In order for information to be communicated to other components of the system, it must first be packaged and sent. This is the role of a publisher. In order to publish a message, you must first create a data structure which defines this message, populate it with the required information and then publish it. An example can be found below.
