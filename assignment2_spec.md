@@ -263,11 +263,16 @@ In the method `joy_message_callback`:
 
 ### Sub-task B: Calculate linear and angular acceleration inputs (4 marks)
 The axes we will need to read from are defined in `config_` .
-* speed_plus_axis: Positive linear acceleration axis value
+* speed_plus_axis: Positive linear acceleration axis
 * speed_minus_axis: Negative linear acceleration axis
 * steering_axis: Angular acceleration axis
 
-The axis could be a trigger or a joystick on the Xbox controller.
+An axis could be a trigger or a joystick on the Xbox controller. For example, if we were using a wired Xbox 360 controller:
+* speed_plus_axis = 0: Read from the Left/Right left joystick
+* speed_minus_axis = 1: Read from the Up/Down left joystick
+* steering_axis = 2: Read from the left trigger
+
+The axes mappings for each controller can be found at [ROS Joy Documentation](http://wiki.ros.org/joy)  
 
 In the method `joy_message_callback`:
 1. Calculate positive linear acceleration. Axis input in the range of [-1.0, 1.0] corresponds to an acceleration output in the range of [0.0, 1.0].
